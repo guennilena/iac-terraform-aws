@@ -1,0 +1,95 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "STSCallerIdentity",
+            "Effect": "Allow",
+            "Action": "sts:GetCallerIdentity",
+            "Resource": "*"
+        },
+        {
+            "Sid": "StateBucketReadConfig",
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetBucketLocation",
+                "s3:GetBucketVersioning",
+                "s3:GetEncryptionConfiguration",
+                "s3:GetBucketPublicAccessBlock",
+                "s3:GetBucketTagging"
+            ],
+            "Resource": "arn:aws:s3:::iac-terraform-aws-dev-state-20260113-0731"
+        },
+        {
+            "Sid": "StateBucketListRestrictedToTerraformPrefix",
+            "Effect": "Allow",
+            "Action": "s3:ListBucket",
+            "Resource": "arn:aws:s3:::iac-terraform-aws-dev-state-20260113-0731",
+            "Condition": {
+                "StringLike": {
+                    "s3:prefix": [
+                        "iac-terraform-aws/*"
+                    ]
+                }
+            }
+        },
+        {
+            "Sid": "StateBucketObjectAccessForTerraformState",
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+                "s3:PutObject",
+                "s3:DeleteObject"
+            ],
+            "Resource": "arn:aws:s3:::iac-terraform-aws-dev-state-20260113-0731/iac-terraform-aws/*"
+        },
+        {
+            "Sid": "ProjectBucketReadBaseline",
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListBucket",
+                "s3:GetBucketLocation",
+                "s3:GetBucketAcl",
+                "s3:GetBucketPolicy",
+                "s3:GetBucketCORS",
+                "s3:GetBucketWebsite",
+                "s3:GetAccelerateConfiguration",
+                "s3:GetBucketRequestPayment",
+                "s3:GetBucketLogging",
+                "s3:GetLifecycleConfiguration",
+                "s3:GetReplicationConfiguration",
+                "s3:GetBucketObjectLockConfiguration",
+                "s3:GetBucketOwnershipControls",
+                "s3:GetBucketPublicAccessBlock",
+                "s3:GetBucketTagging",
+                "s3:GetBucketVersioning",
+                "s3:GetEncryptionConfiguration"
+            ],
+            "Resource": "arn:aws:s3:::iac-terraform-aws-dev-20260113-0641"
+        },
+        {
+            "Sid": "ProjectBucketManageConfigYouUse",
+            "Effect": "Allow",
+            "Action": [
+                "s3:PutBucketVersioning",
+                "s3:PutEncryptionConfiguration",
+                "s3:PutBucketPublicAccessBlock",
+                "s3:PutBucketTagging",
+                "s3:PutBucketPolicy",
+                "s3:DeleteBucketPolicy"
+            ],
+            "Resource": "arn:aws:s3:::iac-terraform-aws-dev-20260113-0641"
+        },
+        {
+            "Sid": "DynamoDBStateLockTable",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:DescribeTable",
+                "dynamodb:GetItem",
+                "dynamodb:PutItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:UpdateItem"
+            ],
+            "Resource": "arn:aws:dynamodb:eu-central-1:712416941616:table/terraform-state-lock"
+        }
+    ]
+}
