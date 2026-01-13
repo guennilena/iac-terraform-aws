@@ -21,11 +21,40 @@ Create a `terraform.tfvars` file:
 bucket_name = "your-globally-unique-bucket-name"
 ```
 
+Initialize and apply the Terraform configuration:
+
 ```bash
 terraform init
 terraform plan
 terraform apply
 ```
+
+```md
+## Remote state
+
+### Backend configuration (HCL)
+```
+
+Terraform uses an S3 backend with DynamoDB state locking:
+
+```hcl
+backend "s3" {
+  bucket         = "iac-terraform-aws-dev-state-20260113-0731"
+  key            = "iac-terraform-aws/dev/terraform.tfstate"
+  region         = "eu-central-1"
+  dynamodb_table = "terraform-state-lock"
+  encrypt        = true
+}
+```
+
+```md
+## IAM
+
+### Least-privilege IAM policy (JSON)
+```
+
+A custom IAM policy is used for the Terraform user.  
+See `docs/iam-policy.json` for the full policy definition.
 
 ## Notes
 terraform.tfvars is intentionally not committed.
