@@ -56,6 +56,44 @@ backend "s3" {
 A custom IAM policy is used for the Terraform user.  
 See `docs/iam-policy.json` for the full policy definition.
 
+## Architecture
+
+```text
++----------------------+
+|  Terraform CLI       |
+|  (local machine)     |
++----------+-----------+
+           |
+           | AWS API calls
+           v
++----------------------+
+|  AWS Account         |
+|                      |
+|  +----------------+  |
+|  | S3 State       |  |
+|  | Bucket         |  |
+|  | (versioned)    |  |
+|  +----------------+  |
+|          ^           |
+|          |           |
+|  +----------------+  |
+|  | DynamoDB       |  |
+|  | Lock Table     |  |
+|  +----------------+  |
+|                      |
+|  +----------------+  |
+|  | Project S3     |  |
+|  | Bucket         |  |
+|  +----------------+  |
++----------------------+
+```
+
+```md
+Terraform uses a remote S3 backend to store the state file.
+State locking is handled via DynamoDB to prevent concurrent modifications.
+A separate S3 bucket is managed as part of the project infrastructure.
+```
+
 ## Notes
 terraform.tfvars is intentionally not committed.
 Use terraform.tfvars.example as a template.
