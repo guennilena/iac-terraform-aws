@@ -67,7 +67,7 @@ terraform init
 terraform apply
 ```
 
-## Connect to EC2
+### Connect to EC2
 
 AWS Console → EC2 → Instance → Connect → Session Manager
 
