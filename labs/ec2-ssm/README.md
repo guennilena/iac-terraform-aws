@@ -71,14 +71,14 @@ terraform apply
 
 AWS Console → EC2 → Instance → Connect → Session Manager
 
-# Verify role-based authentication
+### Verify role-based authentication
 
 ```bash
 aws sts get-caller-identity
 aws configure list
 ```
 
-# Test S3 access (bucket-scoped)
+### Test S3 access (bucket-scoped)
 
 ```bash
 aws s3 ls s3://<lab-bucket-name>
