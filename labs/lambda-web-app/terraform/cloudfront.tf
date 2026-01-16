@@ -22,6 +22,18 @@ resource "aws_cloudfront_distribution" "frontend" {
     origin_access_control_id = aws_cloudfront_origin_access_control.frontend.id
   }
 
+    origin {
+      domain_name = replace(aws_apigatewayv2_api.http_api.api_endpoint, "https://", "")
+      origin_id   = "apigw-http-api"
+
+      custom_origin_config {
+        http_port              = 80
+        https_port             = 443
+        origin_protocol_policy = "https-only"
+        origin_ssl_protocols   = ["TLSv1.2"]
+    }
+  }
+
   default_cache_behavior {
     target_origin_id       = "s3-frontend"
     viewer_protocol_policy = "redirect-to-https"
@@ -40,6 +52,35 @@ resource "aws_cloudfront_distribution" "frontend" {
         forward = "none"
       }
     }
+  }
+
+  ordered_cache_behavior {
+    path_pattern           = "/api/*"
+    target_origin_id       = "apigw-http-api"
+    viewer_protocol_policy = "redirect-to-https"
+
+    allowed_methods = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
+    cached_methods  = ["GET", "HEAD", "OPTIONS"]
+
+    compress = true
+
+    forwarded_values {
+      query_string = true
+
+      headers = [
+        "Authorization",
+        "Origin",
+        "Access-Control-Request-Method",
+        "Access-Control-Request-Headers"
+      ]
+
+      cookies {
+        forward = "all"
+      }
+    }
+
+    # Falls du Security Headers Policy nutzt, auch hier anhängen:
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.security.id
   }
 
   restrictions {
