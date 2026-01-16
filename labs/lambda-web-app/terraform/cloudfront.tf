@@ -29,6 +29,8 @@ resource "aws_cloudfront_distribution" "frontend" {
     allowed_methods = ["GET", "HEAD", "OPTIONS"]
     cached_methods  = ["GET", "HEAD", "OPTIONS"]
 
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.security.id
+
     compress = true
 
     forwarded_values {
