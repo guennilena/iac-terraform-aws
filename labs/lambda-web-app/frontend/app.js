@@ -9,3 +9,8 @@ async function callApi() {
       "API call failed: " + err;
   }
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("btnCallApi");
+  if (btn) btn.addEventListener("click", callApi);
+});

@@ -2,6 +2,10 @@ import json
 
 def handler(event, context):
     path = event.get("rawPath", "/")
+
+    if path.startswith("/api/"):
+        path = path[len("/api"):]
+
     if path == "/health":
         body = {"ok": True}
     else:
