@@ -57,7 +57,7 @@ Caching / Updates
 
 index.html is configured with Cache-Control: no-cache for fast iteration.
 
-If CloudFront still serves stale content, invalidate:
+If CloudFront still serves state content, invalidate:
 
 ```bash
 aws cloudfront create-invalidation \
