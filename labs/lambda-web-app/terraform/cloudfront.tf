@@ -126,7 +126,9 @@ resource "aws_s3_bucket_policy" "frontend" {
 
 
 ############################################
-#aws cloudfront create-invalidation \
+# s3.tf contains cache_control = "no-cache, no-store, must-revalidate"
+# if cache is enabled use the follwing batch command
+# aws cloudfront create-invalidation \
 #  --distribution-id "$(terraform output -raw cloudfront_distribution_id)" \
 #  --paths "/" "/index.html" "/app.js"
 ############################################
