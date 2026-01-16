@@ -1,10 +1,14 @@
 # Terraform
 .terraform/
+.build/
 *.tfstate
 *.tfstate.backup
 crash.log
 *.tfvars
 *.tfvars.json
+
+# Build artifacts
+terraform/build/
 
 # CLI / OS
 .DS_Store
