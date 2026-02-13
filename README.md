@@ -12,6 +12,9 @@ This repository contains:
 
 ## Repository structure
 
+- **Root/` (this directory)**
+  Legacy S3 bucket example (initial project)”
+
 - `bootstrap/`  
   Creates the remote state backend:
   - S3 bucket (versioning + encryption + public access block)
