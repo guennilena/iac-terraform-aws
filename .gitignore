@@ -1,5 +1,5 @@
 # Terraform
-.terraform/
+**/.terraform/
 .build/
 *.tfstate
 *.tfstate.backup
@@ -13,3 +13,7 @@ labs/**/terraform/build/
 # CLI / OS
 .DS_Store
 Thumbs.db
+
+# local experiments
+import-demo/
+data-demo/

@@ -1,0 +1,7 @@
+aws_profile = "terraform"
+aws_region  = "eu-central-1"
+
+state_bucket_prefix = "tfstate-blacky"
+lock_table_prefix   = "terraform-state-lock"
+
+project = "iac-terraform-aws"
