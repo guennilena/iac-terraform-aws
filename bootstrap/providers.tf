@@ -1,7 +1,4 @@
-provider "aws" {
-  region = var.aws_region
-  profile = "terraform"
-}
+// bootstrap/providers.tf
 
 terraform {
   required_version = ">= 1.5.0"
@@ -11,5 +8,14 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.0"
+    }
   }
+}
+
+provider "aws" {
+  region  = var.aws_region
+  profile = var.aws_profile
 }

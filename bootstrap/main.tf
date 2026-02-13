@@ -1,10 +1,25 @@
-resource "aws_s3_bucket" "tf_state" {
-  bucket = var.state_bucket_name
+// bootstrap/main.tf
+
+resource "random_id" "suffix" {
+  byte_length = 4
+}
+
+locals {
+  state_bucket_name = lower("${var.state_bucket_prefix}-${random_id.suffix.hex}")
+  lock_table_name   = lower("${var.lock_table_prefix}-${random_id.suffix.hex}")
 
   tags = {
-    Name      = "terraform-remote-state"
     ManagedBy = "Terraform"
+    Project   = var.project
   }
+}
+
+resource "aws_s3_bucket" "tf_state" {
+  bucket = local.state_bucket_name
+
+  tags = merge(local.tags, {
+    Name = "terraform-remote-state"
+  })
 }
 
 resource "aws_s3_bucket_versioning" "tf_state" {
@@ -35,7 +50,7 @@ resource "aws_s3_bucket_public_access_block" "tf_state" {
 }
 
 resource "aws_dynamodb_table" "tf_lock" {
-  name         = var.lock_table_name
+  name         = local.lock_table_name
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "LockID"
 
@@ -44,8 +59,7 @@ resource "aws_dynamodb_table" "tf_lock" {
     type = "S"
   }
 
-  tags = {
-    Name      = "terraform-state-lock"
-    ManagedBy = "Terraform"
-  }
+  tags = merge(local.tags, {
+    Name = "terraform-state-lock"
+  })
 }

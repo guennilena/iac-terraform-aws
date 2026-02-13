@@ -22,15 +22,15 @@ resource "aws_cloudfront_distribution" "frontend" {
     origin_access_control_id = aws_cloudfront_origin_access_control.frontend.id
   }
 
-    origin {
-      domain_name = replace(aws_apigatewayv2_api.http_api.api_endpoint, "https://", "")
-      origin_id   = "apigw-http-api"
+  origin {
+    domain_name = replace(aws_apigatewayv2_api.http_api.api_endpoint, "https://", "")
+    origin_id   = "apigw-http-api"
 
-      custom_origin_config {
-        http_port              = 80
-        https_port             = 443
-        origin_protocol_policy = "https-only"
-        origin_ssl_protocols   = ["TLSv1.2"]
+    custom_origin_config {
+      http_port              = 80
+      https_port             = 443
+      origin_protocol_policy = "https-only"
+      origin_ssl_protocols   = ["TLSv1.2"]
     }
   }
 

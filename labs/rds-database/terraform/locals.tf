@@ -11,11 +11,11 @@ resource "random_string" "suffix" {
 }
 
 locals {
-  az_a             = data.aws_availability_zones.available.names[0]
-  az_b             = data.aws_availability_zones.available.names[1]
+  az_a = data.aws_availability_zones.available.names[0]
+  az_b = data.aws_availability_zones.available.names[1]
 
-  name_suffix      = random_string.suffix.result
-  vpc_name         = "${var.project_name}-vpc-${local.name_suffix}"
-  db_identifier    = "${var.project_name}-${local.name_suffix}"
+  name_suffix       = random_string.suffix.result
+  vpc_name          = "${var.project_name}-vpc-${local.name_suffix}"
+  db_identifier     = "${var.project_name}-${local.name_suffix}"
   subnet_group_name = "${var.project_name}-subnets-${local.name_suffix}"
 }

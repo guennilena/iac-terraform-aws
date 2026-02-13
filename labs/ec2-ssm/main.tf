@@ -1,5 +1,10 @@
 data "aws_caller_identity" "current" {}
 
+moved {
+  from = aws_security_group.ec2
+  to   = aws_security_group.main
+}
+
 data "aws_ami" "al2" {
   most_recent = true
   owners      = ["amazon"]
@@ -57,7 +62,7 @@ resource "aws_route_table_association" "public" {
 }
 
 # Security group: no inbound needed for SSM
-resource "aws_security_group" "ec2" {
+resource "aws_security_group" "main" {
   name        = "${var.name_prefix}-sg"
   description = "No inbound; outbound allowed for SSM"
   vpc_id      = aws_vpc.this.id
@@ -72,6 +77,11 @@ resource "aws_security_group" "ec2" {
   tags = {
     Name = "${var.name_prefix}-sg"
   }
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
+
 }
 
 # --- IAM Role for EC2 + SSM ---
@@ -113,7 +123,7 @@ resource "aws_instance" "this" {
   ami                         = data.aws_ami.al2.id
   instance_type               = var.instance_type
   subnet_id                   = aws_subnet.public.id
-  vpc_security_group_ids      = [aws_security_group.ec2.id]
+  vpc_security_group_ids      = [aws_security_group.main.id]
   iam_instance_profile        = aws_iam_instance_profile.ec2.name
   associate_public_ip_address = true
 

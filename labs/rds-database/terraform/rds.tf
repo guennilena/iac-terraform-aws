@@ -19,7 +19,7 @@ resource "aws_db_instance" "postgres" {
   publicly_accessible = false
   multi_az            = false
 
-# Erzwingt die AZ für Single-AZ
+  # Erzwingt die AZ für Single-AZ
   availability_zone = local.az_a
 
   backup_retention_period = 1

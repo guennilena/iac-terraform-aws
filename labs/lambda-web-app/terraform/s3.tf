@@ -63,10 +63,10 @@ resource "aws_s3_bucket_versioning" "frontend" {
 ############################################
 
 resource "aws_s3_object" "index_html" {
-  bucket       = aws_s3_bucket.frontend.id
-  key          = "index.html"
-  source       = "${path.module}/../frontend/index.html"
-  content_type = "text/html"
+  bucket        = aws_s3_bucket.frontend.id
+  key           = "index.html"
+  source        = "${path.module}/../frontend/index.html"
+  content_type  = "text/html"
   cache_control = "no-cache, no-store, must-revalidate"
 
   etag = filemd5("${path.module}/../frontend/index.html")
