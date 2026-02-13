@@ -1,115 +1,115 @@
 # iac-terraform-aws
 
-Infrastructure as Code (IaC) project using Terraform to provision AWS resources on AWS.
+Infrastructure as Code (IaC) examples using Terraform on AWS.
 
-## What it does
-- Creates an S3 bucket
-- Enables bucket versioning
-- Applies a public access block (secure-by-default)
-- Adds consistent resource tags
-- Uses a remote Terraform state stored in S3
+This repository contains:
+- a **bootstrap** stack to create a secure remote Terraform state backend (S3 + DynamoDB locking)
+- multiple **labs** (EC2/SSM, RDS, Lambda web app) used during training
+
+> Note: The labs are intentionally lightweight and may use **local state** unless a backend is configured.
+
+---
+
+## Repository structure
+
+- `bootstrap/`  
+  Creates the remote state backend:
+  - S3 bucket (versioning + encryption + public access block)
+  - DynamoDB table for state locking
+
+- `labs/`  
+  Independent Terraform configurations used as practice labs (each lab has its own working directory/state).
+
+---
 
 ## Requirements
+
 - Terraform >= 1.5
-- AWS CLI configured
-- An AWS account with permissions to manage S3
+- AWS CLI installed and configured
+- AWS account permissions for the resources you plan to create (S3/DynamoDB for bootstrap, plus the lab-specific services)
 
-## AWS Credentials
+---
 
-This project uses a named AWS CLI profile.
+## AWS credentials
 
-Required profile:
-- Profile name: `terraform`
+Terraform reads credentials from the standard AWS credential chain.
 
-Configure credentials using the AWS CLI:
+Recommended: configure a named AWS CLI profile:
 
 ```bash
 aws configure --profile terraform
-
-Or set the profile explicitly before running Terraform:
-
-# Windows (PowerShell)
-$env:AWS_PROFILE="terraform"
-
-# Windows (cmd)
-set AWS_PROFILE=terraform
-
-# Linux / macOS
-export AWS_PROFILE=terraform
+aws sts get-caller-identity --profile terraform
 ```
 
-## Usage
+Optional (macOS / Linux):
 
-Create a terraform.tfvars file:
-```hcl
-bucket_name = "your-globally-unique-bucket-name"
-```
-
-Initialize and apply the Terraform configuration:
 ```bash
-terraform init
-terraform plan
+export AWS_PROFILE=terraform
+export AWS_REGION=eu-central-1
+```
+
+## Quickstart: bootstrap remote state (recommended first)
+
+Copy bootstrap/terraform.tfvars.example to bootstrap/terraform.tfvars and adjust values.
+
+Run this once to create the remote state backend.
+
+```bash
+cd bootstrap
+terraform init -backend=false
 terraform apply
 ```
 
-If backend configuration changes, reinitialize Terraform:
-```bash
-terraform -reconfigure
-```
+After apply, Terraform prints outputs similar to:
+- state_bucket_name (e.g. tfstate-...-<suffix>)
+- lock_table_name (e.g. terraform-state-lock-<suffix>)
 
-## Remote State
-
-Terraform uses a remote S3 backend to store the state file.
-State locking is handled using the S3-native lock file mechanism.
-
-## Backend configuration (HCL)
-```hcl
-backend "s3" {
-  bucket       = "iac-terraform-aws-dev-state-20260113-0731"
-  key          = "iac-terraform-aws/dev/terraform.tfstate"
-  region       = "eu-central-1"
-  encrypt      = true
-  use_lockfile = true
-}
-```
+Use these values when configuring an S3 backend for other stacks.
 
 ## IAM
-A custom least-privilege IAM policy is used for the Terraform user.
-See docs/iam-policy.json for the full policy definition.
 
-## Architecture
-```text
-+----------------------+
-|  Terraform CLI       |
-|  (local machine)     |
-+----------+-----------+
-           |
-           | AWS API calls
-           v
-+----------------------+
-|  AWS Account         |
-|                      |
-|  +----------------+  |
-|  | S3 State       |  |
-|  | Bucket         |  |
-|  | (versioned)    |  |
-|  +----------------+  |
-|          |           |
-|          v           |
-|  +----------------+  |
-|  | Lock File      |  |
-|  | (S3-native)   |  |
-|  +----------------+  |
-|                      |
-|  +----------------+  |
-|  | Project S3     |  |
-|  | Bucket         |  |
-|  +----------------+  |
-+----------------------+
+This repo uses IAM in two places:
+
+1) **Per-lab IAM (Terraform-managed)**
+   Some labs define their own IAM roles/policies in `iam.tf` (e.g. Lambda execution role, EC2 instance role).
+
+2) **Terraform operator permissions (example policy)**
+   An example IAM policy for the identity running Terraform (state backend access) is provided:
+   - `docs/iam-policy.json`
+
+   Note: This file is an example/template and must be adapted to your bucket/table naming. Lab stacks typically require additional permissions.
+
+## Working with labs
+
+Each lab is an independent Terraform working directory.
+Run commands in the directory that contains the .tf files.
+
+Examples:
+
+```bash
+cd labs/ec2-ssm
+terraform init
+terraform plan
+terraform apply
+terraform destroy
 ```
+
+```bash
+cd labs/rds-database/terraform
+terraform init
+terraform plan
+terraform apply
+terraform destroy
+```
+
+## About Terraform state
+
+Terraform state is maintained per working directory:
+- without a backend block: local state (terraform.tfstate) in that directory
+- with an S3 backend: state stored remotely in S3, optionally locked via DynamoDB
 
 ## Notes
 
-terraform.tfvars is intentionally not committed.
-Use terraform.tfvars.example as a template.
+- Keep AWS credentials out of .tf files and out of version control.
+- Costs: most labs should be destroyed after use. Pay special attention to RDS, NAT Gateway, and any long-running compute resources.
 
