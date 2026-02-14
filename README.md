@@ -33,6 +33,9 @@ This repository contains:
 - AWS CLI installed and configured
 - AWS account permissions for the resources you plan to create (S3/DynamoDB for bootstrap, plus the lab-specific services)
 
+> Note: `terraform.tfvars` and all `*.tfstate*` files are intentionally not committed. Use the provided `terraform.tfvars.example` as a template.
+
+
 ---
 
 ## AWS credentials
