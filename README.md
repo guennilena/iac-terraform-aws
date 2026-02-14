@@ -22,6 +22,8 @@ This repository contains:
 
 - `labs/`  
   Independent Terraform configurations used as practice labs (each lab has its own working directory/state).
+  - `ec2-ssm/` – AWS: EC2 managed via SSM Session Manager (no inbound SSH)
+  - `azure-vm-runcommand/` – Azure: Linux VM managed via Run Command/Serial Console (no inbound SSH), comparable to `ec2-ssm`
 
 ---
 
