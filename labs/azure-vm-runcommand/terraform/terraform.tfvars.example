@@ -1,0 +1,5 @@
+# Example values (do not commit terraform.tfvars)
+location            = "northeurope"
+vm_size             = "Standard_D2as_v7"
+admin_username      = "azureuser"
+ssh_public_key_path = "~/.ssh/id_rsa_azure.pub"
